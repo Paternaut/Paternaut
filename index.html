@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confidence Cube - Paternaut</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #0ABAB5; text-align: center; font-size: 48px; margin: 30px 0; }
+        .dice-container { text-align: center; margin: 40px 0; }
+        .dice { 
+            width: 150px; height: 150px; margin: 0 auto 30px;
+            background: #0ABAB5; border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: transform 0.5s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .dice:hover { transform: scale(1.1); }
+        .dice-inner { font-size: 80px; }
+        .roll-btn {
+            padding: 15px 40px; font-size: 20px; font-weight: bold;
+            background: #0ABAB5; color: white; border: none;
+            border-radius: 50px; cursor: pointer; transition: all 0.3s;
+        }
+        .roll-btn:hover { background: #089a95; transform: scale(1.05); }
+        .result { 
+            margin: 40px auto; padding: 30px; background: white;
+            border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 600px; display: none;
+        }
+        .result.show { display: block; animation: slideIn 0.5s; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .challenge { color: #0ABAB5; font-size: 28px; margin: 20px 0; }
+        .motivation { 
+            background: #0ABAB5; color: white; padding: 20px;
+            border-radius: 15px; margin: 20px 0;
+        }
+        .kit-form { 
+            background: white; padding: 40px; border-radius: 20px;
+            margin: 40px 0; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .rotating { animation: spin 1s ease-in-out; }
+        @keyframes spin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(360deg) scale(0.8); }
+            100% { transform: rotate(720deg) scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CONFIDENCE CUBE</h1>
+        <p style="text-align: center; color: #666; font-size: 18px;">
+            Lancia il dado della fiducia e scopri la tua sfida del giorno!
+        </p>
+        
+        <div class="dice-container">
+            <div class="dice" id="dice" onclick="rollDice()">
+                <span class="dice-inner">🎲</span>
+            </div>
+            <button class="roll-btn" onclick="rollDice()">
+                LANCIA IL DADO! 🎯
+            </button>
+        </div>
+        
+        <div class="result" id="result"></div>
+        
+        <div class="kit-form">
+            <h2 style="color: #0ABAB5; margin-bottom: 20px;">
+                🚀 Vuoi ricevere una sfida ogni giorno?
+            </h2>
+            <p style="color: #666; margin-bottom: 30px;">
+                Iscriviti alla newsletter di Paternaut e ricevi consigli per crescere bambini sicuri di sé!
+            </p>
+            
+            <!-- QUI METTI IL TUO FORM KIT -->
+            <div style="background: #f5f5f5; padding: 20px; border-radius: 10px;">
+                <p>👇 Il tuo form Kit apparirà qui</p>
+            </div>
+        </div>
+        
+        <footer style="text-align: center; margin-top: 60px; color: #666;">
+            <h3 style="color: #0ABAB5;">PATERNAUT</h3>
+            <p>© 2024 Paternaut - Building Confident Kids</p>
+        </footer>
+    </div>
+
+    <script>
+        const challenges = [
+            {emoji: "🎯", text: "Oggi provo qualcosa di nuovo", motivation: "La zona di comfort è il posto dove muoiono i sogni!"},
+            {emoji: "⚽", text: "Oggi faccio sport per 20 minuti", motivation: "Il tuo corpo è la macchina più potente che possiedi!"},
+            {emoji: "🧩", text: "Oggi risolvo un problema da solo", motivation: "Hai tutto quello che serve per trovare la soluzione!"},
+            {emoji: "🤝", text: "Oggi aiuto qualcuno", motivation: "La gentilezza è contagiosa. Spargi il tuo superpotere!"},
+            {emoji: "🏆", text: "Oggi finisco quello che inizio", motivation: "I campioni si riconoscono dal traguardo!"},
+            {emoji: "😊", text: "Oggi scelgo di essere felice", motivation: "La felicità è una decisione, non un caso!"}
+        ];
+        
+        function rollDice() {
+            const dice = document.getElementById('dice');
+            const result = document.getElementById('result');
+            
+            dice.classList.add('rotating');
+            
+            setTimeout(() => {
+                dice.classList.remove('rotating');
+                const random = Math.floor(Math.random() * 6);
+                const challenge = challenges[random];
+                
+                result.innerHTML = `
+                    <h2 style="color: #0ABAB5; font-size: 32px;">
+                        ${challenge.emoji} La tua sfida di oggi:
+                    </h2>
+                    <p class="challenge">"${challenge.text}"</p>
+                    <div class="motivation">
+                        <p style="font-size: 20px;">💪 ${challenge.motivation}</p>
+                    </div>
+                `;
+                result.classList.add('show');
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
