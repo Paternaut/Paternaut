@@ -6,88 +6,364 @@
     <title>Confidence Cube - Paternaut</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #f5f5f5; }
-        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
-        h1 { color: #0ABAB5; text-align: center; font-size: 48px; margin: 30px 0; }
-        .dice-container { text-align: center; margin: 40px 0; }
-        .dice { 
-            width: 150px; height: 150px; margin: 0 auto 30px;
-            background: #0ABAB5; border-radius: 20px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: transform 0.5s;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #ffffff;
+            min-height: 100vh;
         }
-        .dice:hover { transform: scale(1.1); }
-        .dice-inner { font-size: 80px; }
-        .roll-btn {
-            padding: 15px 40px; font-size: 20px; font-weight: bold;
-            background: #0ABAB5; color: white; border: none;
-            border-radius: 50px; cursor: pointer; transition: all 0.3s;
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
         }
-        .roll-btn:hover { background: #089a95; transform: scale(1.05); }
-        .result { 
-            margin: 40px auto; padding: 30px; background: white;
-            border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            max-width: 600px; display: none;
+        h1 { 
+            color: #0ABAB5; 
+            text-align: center; 
+            font-size: 48px; 
+            font-weight: bold;
+            margin: 30px 0 10px;
         }
-        .result.show { display: block; animation: slideIn 0.5s; }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-20px); }
+        .subtitle {
+            text-align: center; 
+            color: #000000; 
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .brand {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #0ABAB5;
+            margin-bottom: 40px;
+        }
+        
+        /* 3D Cube Container */
+        .dice-container {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+            cursor: pointer;
+            perspective: 600px;
+            height: 200px;
+        }
+        
+        .dice-wrapper {
+            width: 200px;
+            height: 200px;
+            position: relative;
+        }
+        
+        #dice {
+            width: 150px;
+            height: 150px;
+            margin: 25px auto;
+            transform-style: preserve-3d;
+            position: relative;
+            transition: transform 0.5s ease-in-out;
+            transform: rotateX(-15deg) rotateY(15deg);
+        }
+        
+        #dice:hover {
+            transform: rotateX(-15deg) rotateY(25deg);
+        }
+        
+        #dice.rolling {
+            transition: transform 2s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            transform: rotateX(720deg) rotateY(720deg) rotateZ(360deg);
+        }
+        
+        /* Dice Faces */
+        .face {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: #0ABAB5;
+            border: 5px solid white;
+            border-radius: 15px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.2), 0 10px 30px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        
+        .face1 { transform: translateZ(75px); }
+        .face2 { transform: rotateY(180deg) translateZ(75px); }
+        .face3 { transform: rotateY(-90deg) translateZ(75px); }
+        .face4 { transform: rotateY(90deg) translateZ(75px); }
+        .face5 { transform: rotateX(90deg) translateZ(75px); }
+        .face6 { transform: rotateX(-90deg) translateZ(75px); }
+        
+        .face-content {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .face-content.with-challenge {
+            width: 100%;
+            height: 100%;
+            background: none;
+            box-shadow: none;
+            border-radius: 0;
+        }
+        
+        .click-text {
+            color: #0ABAB5;
+            font-weight: 900;
+            font-size: 13px;
+            line-height: 1.3;
+            text-align: center;
+            margin: 0;
+        }
+        
+        .face-emoji {
+            font-size: 40px;
+        }
+        
+        .challenge-emoji {
+            font-size: 28px;
+            margin-bottom: 5px;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        }
+        
+        .challenge-text {
+            color: white;
+            font-weight: 900;
+            font-style: italic;
+            font-size: 11px;
+            line-height: 1.3;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin: 0;
+        }
+        
+        /* Instructions */
+        .instructions {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .instructions p {
+            font-size: 18px;
+            color: #000000;
+            margin-bottom: 10px;
+        }
+        
+        .instructions-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #0ABAB5;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        /* Result Box */
+        .result {
+            display: none;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 32px;
+            background: white;
+            border: 4px solid #0ABAB5;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            animation: fadeIn 0.5s;
+        }
+        
+        .result.show { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .challenge { color: #0ABAB5; font-size: 28px; margin: 20px 0; }
-        .motivation { 
-            background: #0ABAB5; color: white; padding: 20px;
-            border-radius: 15px; margin: 20px 0;
+        
+        .result h2 {
+            color: #0ABAB5;
+            font-size: 30px;
+            margin-bottom: 20px;
         }
-        .kit-form { 
-            background: white; padding: 40px; border-radius: 20px;
-            margin: 40px 0; text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        
+        .result-challenge {
+            font-size: 24px;
+            font-weight: bold;
+            font-style: italic;
+            color: #000000;
+            margin: 20px 0;
         }
-        .rotating { animation: spin 1s ease-in-out; }
-        @keyframes spin {
-            0% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(360deg) scale(0.8); }
-            100% { transform: rotate(720deg) scale(1); }
+        
+        .result-motivation {
+            background: #0ABAB5;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        
+        .result-motivation p {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .roll-again {
+            margin-top: 20px;
+            padding: 16px 32px;
+            font-weight: bold;
+            background: #0ABAB5;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .roll-again:hover {
+            background: #089a95;
+            transform: scale(1.05);
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            margin-top: 60px;
+            text-align: center;
+            border-radius: 16px;
+            padding: 32px;
+            background: white;
+            border: 2px solid #0ABAB5;
+        }
+        
+        .cta-section h3 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: 16px;
+        }
+        
+        .cta-section p {
+            color: #000000;
+            margin-bottom: 20px;
+        }
+        
+        .cta-highlight {
+            font-weight: 600;
+            color: #0ABAB5;
+            margin: 20px 0;
+        }
+        
+        /* Kit Form Section */
+        .kit-form {
+            background: #f5f5f5;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 20px 0;
+            color: #000000;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <h1>CONFIDENCE CUBE</h1>
-        <p style="text-align: center; color: #666; font-size: 18px;">
-            Lancia il dado della fiducia e scopri la tua sfida del giorno!
-        </p>
+        <p class="subtitle">Lancia il dado della fiducia e scopri la tua sfida del giorno!</p>
+        <div class="brand">PATERNAUT</div>
         
-        <div class="dice-container">
-            <div class="dice" id="dice" onclick="rollDice()">
-                <span class="dice-inner">🎲</span>
+        <!-- 3D Dice Container -->
+        <div class="dice-container" onclick="rollDice()">
+            <div class="dice-wrapper">
+                <div id="dice">
+                    <!-- Face 1 - Front -->
+                    <div class="face face1">
+                        <div class="face-content" id="face1-content">
+                            <p class="click-text">CLICCA PER<br/>LANCIARLO</p>
+                            <span style="font-size: 20px; margin-top: 5px;">🎲</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Face 2 - Back -->
+                    <div class="face face2">
+                        <div class="face-content" id="face2-content">
+                            <span class="face-emoji">⚽</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Face 3 - Left -->
+                    <div class="face face3">
+                        <div class="face-content" id="face3-content">
+                            <span class="face-emoji">🧩</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Face 4 - Right -->
+                    <div class="face face4">
+                        <div class="face-content" id="face4-content">
+                            <span class="face-emoji">🤝</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Face 5 - Top -->
+                    <div class="face face5">
+                        <div class="face-content" id="face5-content">
+                            <span class="face-emoji">🏆</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Face 6 - Bottom -->
+                    <div class="face face6">
+                        <div class="face-content" id="face6-content">
+                            <span class="face-emoji">😊</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <button class="roll-btn" onclick="rollDice()">
-                LANCIA IL DADO! 🎯
-            </button>
         </div>
         
+        <!-- Instructions -->
+        <div class="instructions" id="instructions">
+            <p>Clicca sul dado per scoprire la tua sfida!</p>
+            <div class="instructions-icon">
+                <span style="font-size: 30px;">👆</span>
+                <span>Tocca il cubo magico</span>
+            </div>
+        </div>
+        
+        <!-- Result Display -->
         <div class="result" id="result"></div>
         
-        <div class="kit-form">
-            <h2 style="color: #0ABAB5; margin-bottom: 20px;">
-                🚀 Vuoi ricevere una sfida ogni giorno?
-            </h2>
-            <p style="color: #666; margin-bottom: 30px;">
-                Iscriviti alla newsletter di Paternaut e ricevi consigli per crescere bambini sicuri di sé!
-            </p>
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <h3>🚀 Confidence Cube Fisico in Arrivo!</h3>
+            <p>Stiamo creando il dado della fiducia in legno per la cameretta dei tuoi bambini.</p>
+            <p>Un oggetto speciale che ricorderà ogni giorno ai tuoi figli di credere in se stessi.</p>
+            <p class="cta-highlight">Vuoi essere tra i primi a riceverlo quando sarà disponibile?</p>
             
-            <!-- QUI METTI IL TUO FORM KIT -->
-            <div style="background: #f5f5f5; padding: 20px; border-radius: 10px;">
-                <p>👇 Il tuo form Kit apparirà qui</p>
+            <!-- Kit Form Embed Section -->
+            <div class="kit-form">
+                <!-- QUI INSERISCI IL TUO FORM KIT -->
+                <p style="color: #666;">👇 Iscriviti alla newsletter per essere aggiornato!</p>
+                <!-- Il codice embed del form Kit va qui -->
             </div>
         </div>
         
-        <footer style="text-align: center; margin-top: 60px; color: #666;">
-            <h3 style="color: #0ABAB5;">PATERNAUT</h3>
-            <p>© 2024 Paternaut - Building Confident Kids</p>
+        <!-- Footer -->
+        <footer>
+            <p>© 2025 Paternaut - Building Confident Kids</p>
         </footer>
     </div>
 
@@ -101,28 +377,81 @@
             {emoji: "😊", text: "Oggi scelgo di essere felice", motivation: "La felicità è una decisione, non un caso!"}
         ];
         
+        let isRolling = false;
+        let hasRolled = false;
+        
         function rollDice() {
+            if (isRolling) return;
+            
+            isRolling = true;
             const dice = document.getElementById('dice');
+            const instructions = document.getElementById('instructions');
             const result = document.getElementById('result');
             
-            dice.classList.add('rotating');
+            // Add rolling animation
+            dice.classList.add('rolling');
             
             setTimeout(() => {
-                dice.classList.remove('rotating');
+                dice.classList.remove('rolling');
                 const random = Math.floor(Math.random() * 6);
                 const challenge = challenges[random];
                 
+                // Update dice faces with challenges if not already done
+                if (!hasRolled) {
+                    updateDiceFaces();
+                    hasRolled = true;
+                }
+                
+                // Set correct rotation for the face
+                const rotations = [
+                    'rotateX(0deg) rotateY(0deg)',      // Face 1
+                    'rotateX(0deg) rotateY(180deg)',    // Face 2
+                    'rotateX(0deg) rotateY(-90deg)',    // Face 3
+                    'rotateX(0deg) rotateY(90deg)',     // Face 4
+                    'rotateX(-90deg) rotateY(0deg)',    // Face 5
+                    'rotateX(90deg) rotateY(0deg)'      // Face 6
+                ];
+                
+                dice.style.transform = rotations[random];
+                
+                // Hide instructions and show result
+                instructions.style.display = 'none';
+                
                 result.innerHTML = `
-                    <h2 style="color: #0ABAB5; font-size: 32px;">
-                        ${challenge.emoji} La tua sfida di oggi:
-                    </h2>
-                    <p class="challenge">"${challenge.text}"</p>
-                    <div class="motivation">
-                        <p style="font-size: 20px;">💪 ${challenge.motivation}</p>
+                    <h2>🎯 La tua sfida di oggi:</h2>
+                    <p class="result-challenge">"${challenge.text}"</p>
+                    <div class="result-motivation">
+                        <p>💪 ${challenge.motivation}</p>
                     </div>
+                    <button class="roll-again" onclick="rollAgain()">Lancia di nuovo! 🎲</button>
                 `;
+                
                 result.classList.add('show');
-            }, 1000);
+                isRolling = false;
+            }, 2000);
+        }
+        
+        function updateDiceFaces() {
+            const faceContents = [
+                document.getElementById('face1-content'),
+                document.getElementById('face2-content'),
+                document.getElementById('face3-content'),
+                document.getElementById('face4-content'),
+                document.getElementById('face5-content'),
+                document.getElementById('face6-content')
+            ];
+            
+            faceContents.forEach((face, index) => {
+                face.classList.add('with-challenge');
+                face.innerHTML = `
+                    <span class="challenge-emoji">${challenges[index].emoji}</span>
+                    <p class="challenge-text">${challenges[index].text}</p>
+                `;
+            });
+        }
+        
+        function rollAgain() {
+            rollDice();
         }
     </script>
 </body>
